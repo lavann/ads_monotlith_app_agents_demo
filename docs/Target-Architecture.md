@@ -413,10 +413,21 @@ CheckoutFailed       → { customerId, reason, cartSnapshot }
 - Grant only necessary permissions (e.g., Cart Service cannot modify Orders)
 - Database views for cross-service reads
 
-**Connection Strings:**
-```
+**Connection Strings** (stored in Azure Key Vault or Kubernetes Secrets):
+```bash
+# Example format only - NEVER store credentials in code or configuration files
 Server=sql-server.database.windows.net;Database=RetailMonolith;User Id=cart-service;Password=***;
+
+# Best Practice: Use Azure Key Vault or Kubernetes Secrets
+# Kubernetes Secret:
+kubectl create secret generic database-secret \
+  --from-literal=connection-string="Server=...;Database=...;User Id=...;Password=..."
+
+# Azure Key Vault (preferred for production):
+# Store in Key Vault, fetch via Managed Identity at runtime
 ```
+
+**Security Note**: Connection strings must always be stored in secure secret management systems (Azure Key Vault, Kubernetes Secrets), never in source code, configuration files, or environment variables visible in logs.
 
 **Rationale:**
 - Minimizes initial migration complexity

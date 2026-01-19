@@ -560,9 +560,12 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 EXPOSE 8081
 COPY --from=build /app/publish .
-ENTRYPOINT ["dotnet", "ProductCatalogService.dll"]
+# IMPORTANT: Replace with your actual service DLL name
+ENTRYPOINT ["dotnet", "YourServiceName.dll"]
 ```
-**Note**: Adjust COPY paths based on your specific project structure.
+**Note**: 
+- Adjust COPY paths based on your specific project structure
+- **Replace `YourServiceName.dll`** with actual service name (e.g., `ProductCatalogService.dll`)
 
 **Acceptance Criteria:**
 - ✅ Service builds successfully (`dotnet build`)
@@ -666,31 +669,58 @@ public async Task OnGetAsync()
 
 **After (calls Product Catalog Service):**
 ```csharp
-private readonly HttpClient _httpClient;
+private readonly IHttpClientFactory _httpClientFactory;
 private readonly IConfiguration _config;
+private readonly AppDbContext _db; // Fallback
 
-public IndexModel(HttpClient httpClient, IConfiguration config)
+public IndexModel(IHttpClientFactory httpClientFactory, IConfiguration config, AppDbContext db)
 {
-    _httpClient = httpClient;
+    _httpClientFactory = httpClientFactory;
     _config = config;
+    _db = db;
 }
 
 public async Task OnGetAsync()
 {
-    var productServiceUrl = _config["ProductCatalogServiceUrl"] ?? "http://product-catalog-service:8081";
-    var response = await _httpClient.GetAsync($"{productServiceUrl}/api/products");
-    
-    if (response.IsSuccessStatusCode)
+    try
     {
-        Products = await response.Content.ReadFromJsonAsync<List<Product>>() ?? new();
+        var httpClient = _httpClientFactory.CreateClient("ProductCatalog");
+        var response = await httpClient.GetAsync("/api/products");
+        
+        if (response.IsSuccessStatusCode)
+        {
+            Products = await response.Content.ReadFromJsonAsync<List<Product>>() ?? new();
+        }
+        else
+        {
+            // Fallback to direct database (safety net during migration)
+            Products = await _db.Products.Where(p => p.IsActive).ToListAsync();
+        }
     }
-    else
+    catch (Exception ex)
     {
-        // Fallback to direct database (safety net during migration)
+        // Log error and fall back to database
+        _logger.LogWarning(ex, "Failed to call Product Catalog Service, falling back to database");
         Products = await _db.Products.Where(p => p.IsActive).ToListAsync();
     }
 }
 ```
+
+**Configure IHttpClientFactory in `Program.cs` (Web BFF):**
+```csharp
+builder.Services.AddHttpClient("ProductCatalog", client =>
+{
+    var url = builder.Configuration["ProductCatalogServiceUrl"] ?? "http://product-catalog-service:8081";
+    client.BaseAddress = new Uri(url);
+    client.Timeout = TimeSpan.FromSeconds(5);
+})
+.AddTransientHttpErrorPolicy(policy => 
+    policy.WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromMilliseconds(100 * Math.Pow(2, retryAttempt))))
+.AddTransientHttpErrorPolicy(policy => 
+    policy.CircuitBreakerAsync(5, TimeSpan.FromSeconds(30)));
+```
+
+**Note**: Using `IHttpClientFactory` prevents socket exhaustion issues that can occur with direct `HttpClient` instantiation.
 
 **Configuration (`appsettings.json` in Web BFF):**
 ```json

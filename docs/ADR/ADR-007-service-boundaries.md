@@ -378,7 +378,11 @@ OrderShipped      → Update order status to "Shipped"
   
   -- Move tables to schemas
   ALTER SCHEMA catalog TRANSFER dbo.Products;
+  ALTER SCHEMA catalog TRANSFER dbo.Inventory;
   ALTER SCHEMA cart TRANSFER dbo.Carts;
+  ALTER SCHEMA cart TRANSFER dbo.CartLines;
+  ALTER SCHEMA orders TRANSFER dbo.Orders;
+  ALTER SCHEMA orders TRANSFER dbo.OrderLines;
   ```
 - **Code reviews** (enforce no cross-table joins, no foreign keys across services)
 - **Integration tests** (verify services only access owned tables)

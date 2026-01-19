@@ -330,7 +330,7 @@ public class CheckoutOrchestrator : ICheckoutOrchestrator
 ```csharp
 // Payment Gateway call with idempotency key
 // Use combination of customer ID and cart hash for true idempotency
-var cartHash = ComputeHash(cart.Lines); // Hash of cart contents
+var cartHash = ComputeCartHash(cart.Lines); // SHA-256 hash of cart contents
 var idempotencyKey = $"checkout-{customerId}-{cartHash}";
 
 var payment = await _paymentGateway.ChargeAsync(new PaymentRequest
@@ -340,6 +340,16 @@ var payment = await _paymentGateway.ChargeAsync(new PaymentRequest
     Token = paymentToken,
     IdempotencyKey = idempotencyKey  // Same cart = same key, enables safe retries
 }, ct);
+
+// Helper method for consistent hashing
+private string ComputeCartHash(IEnumerable<CartLine> lines)
+{
+    using var sha256 = SHA256.Create();
+    var input = string.Join("|", lines.OrderBy(l => l.Sku)
+        .Select(l => $"{l.Sku}:{l.Quantity}:{l.UnitPrice}"));
+    var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(input));
+    return Convert.ToBase64String(hashBytes).Substring(0, 16); // First 16 chars
+}
 ```
 
 **Result**: If request retried with same cart, Stripe returns cached response (no duplicate charge)
