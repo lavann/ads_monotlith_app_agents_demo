@@ -1,0 +1,87 @@
+﻿@page
+<style>
+    .category-img {
+        width: 100%;
+        height: 250px; /* consistent height */
+        object-fit: cover; /* crops evenly */
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+</style>
+
+@model IndexModel
+@{
+    ViewData["Title"] = "Retail Monolith – Home";
+}
+<div class="container-fluid p-0">
+
+    <!-- Hero Carousel -->
+    <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1920&q=80"
+                     class="d-block w-100" alt="Fashion banner">
+                <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded">
+                    <h2 class="fw-bold text-white">Spring Collection</h2>
+                    <p>Fresh looks and new styles for the season.</p>
+                    <a href="/Products" class="btn btn-light">Shop Now</a>
+                </div>
+            </div>
+
+            <div class="carousel-item">
+                <img src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=1920&q=80"
+                     class="d-block w-100" alt="Accessories">
+                <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded">
+                    <h2 class="fw-bold text-white">Accessories Drop</h2>
+                    <p>Complete your look with this season’s picks.</p>
+                    <a href="/Products" class="btn btn-light">Explore</a>
+                </div>
+            </div>
+
+            <div class="carousel-item">
+                <img src="https://images.unsplash.com/photo-1506152983158-b4a74a01c721?auto=format&fit=crop&w=1920&q=80"
+                     class="d-block w-100" alt="Footwear">
+                <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded">
+                    <h2 class="fw-bold text-white">Step Into Comfort</h2>
+                    <p>Footwear that blends style and comfort.</p>
+                    <a href="/Products" class="btn btn-light">Discover</a>
+                </div>
+            </div>
+        </div>
+
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+
+    <!-- Featured Categories -->
+    <div class="container mt-5">
+        <h2 class="text-center mb-4 fw-bold">Shop by Category</h2>
+        <div class="row text-center">
+            <div class="col-md-4 mb-4">
+                <img src="https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?ixlib?auto=format&fit=crop&w=800&q=80"
+                     class="category-img img-fluid rounded shadow">
+                <h5 class="mt-3">Apparel</h5>
+            </div>
+            <div class="col-md-4 mb-4">
+                <img src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=800&q=80"
+                     class="category-img img-fluid rounded shadow">
+                <h5 class="mt-3">Footwear</h5>
+            </div>
+            <div class="col-md-4 mb-4">
+                <img src="https://images.unsplash.com/photo-1649503377051-e092f490c482?auto=format&fit=crop&w=800&q=80"
+                     class="category-img img-fluid rounded shadow">
+                <h5 class="mt-3">Accessories</h5>
+            </div>
+        </div>
+        <div class="text-center mt-4">
+            <a href="/Products" class="btn btn-dark btn-lg">View All Products</a>
+        </div>
+    </div>
+
+</div>

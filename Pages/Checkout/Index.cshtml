@@ -1,0 +1,48 @@
+﻿@page
+@model RetailMonolith.Pages.Checkout.IndexModel
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<h2>Checkout</h2>
+
+@if (!Model.Lines.Any())
+{
+<div class="alert alert-warning">Your cart is empty.</div>
+}
+else
+{
+<table class="table">
+    <thead>
+        <tr>
+            <th>Item</th>
+            <th>Qty</th>
+            <th>Unit Price</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var line in Model.Lines)
+        {
+            <tr>
+                <td>@line.Name</td>
+                <td>@line.Qty</td>
+                <td>@line.Price.ToString("C")</td>
+                <td>@(line.Price* line.Qty).ToString("C")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h4>Total: @Model.Total.ToString("C")</h4>
+
+<form method="post" class="mt-4">
+    <div class="form-group">
+        <label for="paymentToken">Payment Token (Mock)</label>
+        <input asp-for="PaymentToken" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-success mt-3">
+        Complete Checkout
+    </button>
+</form>
+}

@@ -1,0 +1,44 @@
+﻿@page
+@model RetailMonolith.Pages.Orders.IndexModel
+@{
+    ViewData["Title"] = "Orders";
+}
+
+<h2>All Orders</h2>
+
+@if (!Model.Orders.Any())
+{
+    <div class="alert alert-info">No orders have been placed yet.</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Total</th>
+                <th>Items</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model.Orders)
+            {
+                <tr>
+                    <td>@order.Id</td>
+                    <td>@order.CreatedUtc.ToLocalTime()</td>
+                    <td>@order.Status</td>
+                    <td>@order.Total.ToString("C")</td>
+                    <td>@order.Lines.Count</td>
+                    <td>
+                        <a class="btn btn-sm btn-outline-primary" href="/Orders/Details?id=@order.Id">
+                            View Details
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

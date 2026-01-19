@@ -1,0 +1,39 @@
+﻿@page
+@model RetailMonolith.Pages.Orders.DetailsModel
+@{
+}
+
+
+@if (Model.Order is null)
+{
+    <div class="alert alert-danger">Order not found.</div>
+}
+else
+{
+    <h2>Order Confirmation</h2>
+    <p>Thank you! Your order has been successfully placed.</p>
+
+    <h4>Order ID: @Model.Order.Id</h4>
+    <p>Status: <strong>@Model.Order.Status</strong></p>
+    <p>Date: @Model.Order.CreatedUtc.ToLocalTime()</p>
+
+    <table class="table mt-3">
+        <thead>
+            <tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var line in Model.Order.Lines)
+            {
+                <tr>
+                    <td>@line.Name</td>
+                    <td>@line.Quantity</td>
+                    <td>@line.UnitPrice.ToString("C")</td>
+                    <td>@(line.UnitPrice* line.Quantity).ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h4>Total: @Model.Order.Total.ToString("C")</h4>
+    <a class="btn btn-primary mt-3" href="/Products">Continue Shopping</a>
+}
