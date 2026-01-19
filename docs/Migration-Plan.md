@@ -11,7 +11,7 @@ This document provides a detailed, phase-by-phase plan for migrating the RetailM
 - Preserve rollback capability at each phase
 - No "big bang" cutover
 
-**Timeline**: 6-8 slices over 4-6 months (each slice = 2-4 weeks)
+**Timeline**: 8 slices over 6-8 months (24-32 weeks total, each slice = 2-5 weeks)
 
 **First Slice**: Product Catalog Service (read-only extraction)
 
@@ -546,22 +546,23 @@ app.Run();
 
 **Dockerfile**:
 ```dockerfile
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-WORKDIR /app
-EXPOSE 8081
-
+# Stage 1: Build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["ProductCatalogService.csproj", "./"]
+# Copy project file(s) - adjust path based on your project structure
+COPY ["*.csproj", "./"]
 RUN dotnet restore
 COPY . .
 RUN dotnet publish -c Release -o /app/publish
 
-FROM base AS final
+# Stage 2: Runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
+EXPOSE 8081
 COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "ProductCatalogService.dll"]
 ```
+**Note**: Adjust COPY paths based on your specific project structure.
 
 **Acceptance Criteria:**
 - ✅ Service builds successfully (`dotnet build`)

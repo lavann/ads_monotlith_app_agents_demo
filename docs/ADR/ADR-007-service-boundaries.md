@@ -353,9 +353,42 @@ OrderShipped      → Update order status to "Shipped"
 | **Order** | Orders, OrderLines | None |
 
 **Enforcement**:
-- Database permissions (each service has dedicated user with limited grants)
-- Code reviews (enforce no cross-table joins)
-- Integration tests (verify services only access owned tables)
+- **Database permissions** (each service has dedicated database user with limited grants):
+  ```sql
+  -- Product Catalog Service user
+  CREATE USER [product-catalog-svc] WITH PASSWORD = '***';
+  GRANT SELECT, INSERT, UPDATE, DELETE ON dbo.Products TO [product-catalog-svc];
+  GRANT SELECT ON dbo.Inventory TO [product-catalog-svc]; -- Read-only
+  
+  -- Cart Service user
+  CREATE USER [cart-svc] WITH PASSWORD = '***';
+  GRANT SELECT, INSERT, UPDATE, DELETE ON dbo.Carts TO [cart-svc];
+  GRANT SELECT, INSERT, UPDATE, DELETE ON dbo.CartLines TO [cart-svc];
+  
+  -- Order Service user
+  CREATE USER [order-svc] WITH PASSWORD = '***';
+  GRANT SELECT, INSERT, UPDATE ON dbo.Orders TO [order-svc];
+  GRANT SELECT, INSERT, UPDATE ON dbo.OrderLines TO [order-svc];
+  ```
+- **Database schemas** (separate schema per service for stricter isolation):
+  ```sql
+  CREATE SCHEMA catalog;
+  CREATE SCHEMA cart;
+  CREATE SCHEMA orders;
+  
+  -- Move tables to schemas
+  ALTER SCHEMA catalog TRANSFER dbo.Products;
+  ALTER SCHEMA cart TRANSFER dbo.Carts;
+  ```
+- **Code reviews** (enforce no cross-table joins, no foreign keys across services)
+- **Integration tests** (verify services only access owned tables)
+- **Database views** (for read-only cross-service data):
+  ```sql
+  -- View for Checkout Service to read product prices
+  CREATE VIEW checkout.ProductPrices AS
+  SELECT Id, Sku, Price FROM catalog.Products WHERE IsActive = 1;
+  GRANT SELECT ON checkout.ProductPrices TO [checkout-svc];
+  ```
 
 ---
 

@@ -15,7 +15,7 @@ This document defines the target architecture for migrating RetailMonolith from 
 
 ## Service Boundaries
 
-Based on domain analysis of the current monolith, we identify four bounded contexts with clear service boundaries:
+Based on domain analysis of the current monolith, we identify five service boundaries (four domain services plus one BFF):
 
 ### 1. Product Catalog Service
 

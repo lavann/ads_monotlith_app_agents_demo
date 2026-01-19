@@ -329,18 +329,22 @@ public class CheckoutOrchestrator : ICheckoutOrchestrator
 **Implementation**:
 ```csharp
 // Payment Gateway call with idempotency key
-var idempotencyKey = $"checkout-{customerId}-{DateTime.UtcNow:yyyyMMdd-HHmmss}";
+// Use combination of customer ID and cart hash for true idempotency
+var cartHash = ComputeHash(cart.Lines); // Hash of cart contents
+var idempotencyKey = $"checkout-{customerId}-{cartHash}";
 
 var payment = await _paymentGateway.ChargeAsync(new PaymentRequest
 {
     Amount = total,
     Currency = "GBP",
     Token = paymentToken,
-    IdempotencyKey = idempotencyKey  // Stripe-specific
+    IdempotencyKey = idempotencyKey  // Same cart = same key, enables safe retries
 }, ct);
 ```
 
-**Result**: If request retried, Stripe returns cached response (no duplicate charge)
+**Result**: If request retried with same cart, Stripe returns cached response (no duplicate charge)
+
+**Alternative**: Use GUID generated at saga start and persisted with saga state (reused on retries)
 
 **Inventory Reservation Idempotency**:
 ```csharp
