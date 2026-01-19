@@ -1,5 +1,6 @@
 ---
 name: 03 – Test strategy and baseline tests
+description: Establishes a test strategy and baseline automated tests; adds CI. Avoids production code changes unless required for testability.
 about: Generate test strategy and baseline automated tests
 title: "03 – Define test strategy and generate baseline tests"
 labels: ["agent:testing"]

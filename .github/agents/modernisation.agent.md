@@ -1,5 +1,6 @@
 ---
 name: 02 – Modernisation plan
+description: Proposes target architecture + incremental migration plan from current monolith to containerised services.
 about: Propose target architecture and incremental modernisation strategy
 title: "02 – Propose target architecture and migration plan"
 labels: ["agent:modernisation"]

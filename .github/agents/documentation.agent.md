@@ -1,5 +1,6 @@
 ---
 name: 01 – Document current system (HLD / LLD)
+description: Produces factual system documentation (HLD/LLD/ADRs/Runbook) for the current codebase. No refactors.
 about: Generate accurate system documentation for the existing monolith
 title: "01 – Document current monolith (HLD / LLD / ADRs)"
 labels: ["agent:documentation"]

@@ -1,5 +1,6 @@
 ---
 name: 04 – Implementation slice
+description: Implements one approved migration slice per PR. Keeps changes reviewable, tests green, and docs updated.
 about: Implement a single approved migration slice
 title: "04 – Implement migration slice: <slice name>"
 labels: ["agent:implementation"]
