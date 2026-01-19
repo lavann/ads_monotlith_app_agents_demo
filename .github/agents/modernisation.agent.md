@@ -42,4 +42,4 @@ Design a target architecture and a safe, incremental migration plan from the cur
 ## Review Gate
 Human approval of “Slice 1” before tests/coding begin.
 ## Definition of Done
-- A team could implement Slice 0 and Slice 1 without guessing.
+- A team could implement Slice 0 and Slice 1 without guessing.    

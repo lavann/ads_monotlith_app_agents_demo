@@ -47,5 +47,3 @@ Create / update:
 
 ## Review Gate
 Human review required before proceeding.
-- Verify documentation accuracy
-- Ensure no production code changes

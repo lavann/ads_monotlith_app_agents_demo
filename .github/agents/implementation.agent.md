@@ -33,4 +33,4 @@ Implement ONE approved migration slice from /docs/Migration-Plan.md.
 ## Review Gate
 Human review + green CI required before merge.
 - Verify all tests pass (existing + new)
-- Ensure code changes align with slice definition
+- Ensure code changes align with slice definition 
