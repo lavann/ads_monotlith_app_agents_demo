@@ -1,0 +1,53 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+
+    - name: Run Unit Tests
+      run: dotnet test --no-build --configuration Release --filter "Category=Unit" --verbosity normal --logger "trx;LogFileName=unit-test-results.trx"
+
+    - name: Run Integration Tests
+      run: dotnet test --no-build --configuration Release --filter "Category=Integration" --verbosity normal --logger "trx;LogFileName=integration-test-results.trx"
+
+    - name: Run Smoke Tests
+      run: dotnet test --no-build --configuration Release --filter "Category=Smoke" --verbosity normal --logger "trx;LogFileName=smoke-test-results.trx"
+
+    - name: Run All Tests (Summary)
+      run: dotnet test --no-build --configuration Release --verbosity normal
+
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: |
+          **/TestResults/*.trx
+
+    - name: Test Summary
+      if: always()
+      run: |
+        echo "## Test Results Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "✅ All tests completed. Check the workflow logs for details." >> $GITHUB_STEP_SUMMARY
